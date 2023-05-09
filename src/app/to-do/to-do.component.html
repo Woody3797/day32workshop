@@ -1,0 +1,63 @@
+<h1>ToDo</h1>
+
+<div>
+    <form [formGroup]="todoForm" (submit)="processTodo()">
+        <table>
+            <tr>
+                <td>Title: </td>
+                <td>
+                    <input type="text" size="30" placeholder="title" formControlName="title">
+                </td>
+            </tr>
+            <tr>
+                <td>Name: </td>
+                <td>
+                    <input type="text" size="30" placeholder="name" formControlName="name">
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td align="right">
+                    <button type="submit" [disabled]="!validForm()">Save</button>
+                    <button type="button" (click)="addATask()">Add Task</button>
+                    
+                </td>
+            </tr>
+
+        </table>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Task</th>
+                    <th>Priority</th>
+                    <th>Due Date</th>
+                </tr>
+            </thead>
+            <tbody formArrayName="tasks">
+                <tr *ngFor="let t of tasksArray.controls; let i = index" [formGroupName]="i">
+                    <td>
+                        <input type="text" size="30" formControlName="task">
+                    </td>
+                    <td>
+                        <label>High
+                            <input type="radio" name="priority" value="high" formControlName="priority">
+                        </label>
+                        <label>Medium
+                            <input type="radio" name="priority" value="medium" formControlName="priority">
+                        </label>
+                        <label>Low
+                            <input type="radio" name="priority" value="low"  formControlName="priority">
+                        </label>
+                    </td>
+                    <td>
+                        <input type="datetime-local" formControlName="due">
+                    </td>
+                    <td>
+                        <button type="button" (click)="removeATask(i)">X</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
