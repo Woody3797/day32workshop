@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Output } from '@angular/core';
-import { Todo, TodoList } from '../model';
+import { Todo } from '../model';
 
 @Component({
   selector: 'app-task',

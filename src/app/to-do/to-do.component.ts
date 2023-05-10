@@ -1,29 +1,40 @@
-import { Component, OnInit, Output, inject } from '@angular/core';
+import { Component, OnChanges, OnInit, Output, SimpleChanges, inject } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Todo } from '../model';
+import { Task, Todo } from '../model';
+import { Subject } from 'rxjs';
 
 @Component({
     selector: 'app-to-do',
     templateUrl: './to-do.component.html',
     styleUrls: ['./to-do.component.css']
 })
-export class ToDoComponent implements OnInit {
+export class ToDoComponent implements OnInit, OnChanges {
+
+    ngOnChanges(changes: SimpleChanges): void {
+        console.info('changes:', changes)
+        const c = changes['todo']
+        if (c.firstChange) {
+            return
+        }
+        const td: Todo = c.currentValue as Todo
+        this.todoForm = this.createForm(c.currentValue as Todo)
+    }
 
     todoForm!: FormGroup
     todo!: Todo
     tasksArray!: FormArray
 
     @Output()
-    onNewTask = new Subject<>
+    onNewTask = new Subject<Todo>
 
     fb: FormBuilder = inject(FormBuilder)
 
     ngOnInit(): void {
-        this.todoForm = this.createForm()
+        this.todoForm = this.createForm(this.todo)
     }
 
 
-    private createForm(): FormGroup {
+    private createForm(todo: Todo | null): FormGroup {
         this.tasksArray = this.fb.array([])
         return new FormGroup({
             title: new FormControl<string>('', [Validators.required, Validators.minLength(3)]),
@@ -37,7 +48,7 @@ export class ToDoComponent implements OnInit {
         console.info(todo)
         localStorage.setItem("todo", JSON.stringify(todo))
 
-        this.todoForm = this.createForm()
+        this.todoForm = this.createForm(null)
 
     } 
 
@@ -46,15 +57,19 @@ export class ToDoComponent implements OnInit {
     }
 
     addATask() {
-        this.tasksArray.push(this.createTasksList())
+        this.tasksArray.push(this.createTask(null))
     }
 
-    private createTasksList(): FormGroup {
+    private createTask(task: Task | null): FormGroup {
         return new FormGroup({
             task: new FormControl<string>('', [Validators.required]),
             priority: new FormControl<string>('low'),
             due: new FormControl<string>('', [Validators.required]),
         })
+    }
+
+    private createTasks(tasks: Task[]): FormArray {
+        return this.fb.array(tasks.map(t => this.createTask(t)))
     }
 
     validForm() {

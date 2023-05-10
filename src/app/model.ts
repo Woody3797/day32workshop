@@ -9,9 +9,3 @@ export interface Task {
     priority: string
     due: string
 }
-
-export interface TodoList {
-    title: string
-    name: string
-    tasks: Task[]
-}
